@@ -4,13 +4,18 @@ import { BehaviorSubject, lastValueFrom, map, Observable } from 'rxjs';
 import { BaseService } from '../base.service';
 import { environment } from '../../../environments/environment.development';
 import { jwtDecode } from 'jwt-decode';
+import { UsersService } from '../users/users.service';
+import { UserJWT, UserJWTHttp } from '../../entities/user.entity';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService extends BaseService {
-  private token$: BehaviorSubject <string | undefined> = new BehaviorSubject(undefined);//Jamais public
+
   private readonly http = inject(HttpClient)
+  private readonly usersService = inject(UsersService)
+
+  private token$: BehaviorSubject <string | undefined> = new BehaviorSubject(undefined);//Jamais public
 
   constructor() {
     super('api')
@@ -50,11 +55,12 @@ export class AuthService extends BaseService {
   logout(): void {
     this.token$.next(undefined);
     localStorage.removeItem(environment.localStorageKeys.token)
+    this.usersService.userJWT = undefined; 
   }
 
   private processToken(token: string, stayConnected:boolean): void {
-    const tokenExtracted = jwtDecode(token);
-    console.log(tokenExtracted);
+    const tokenExtracted:UserJWTHttp = jwtDecode(token);
+    this.usersService.userJWT = UserJWT.fromHttp(tokenExtracted);
     this.token$.next(token);
 
     if(stayConnected){
