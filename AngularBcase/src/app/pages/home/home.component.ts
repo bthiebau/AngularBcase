@@ -1,20 +1,14 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../services/auth/auth.service';
-import { Router } from '@angular/router';
+import { Component} from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [],
+  imports: [RouterLink, NgIf],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  private readonly authService = inject(AuthService)
-  private readonly router = inject(Router)
-
-  logout(){
-    this.authService.logout();
-    this.router.navigateByUrl('connexion')
-  }
+ 
 }
