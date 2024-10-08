@@ -43,7 +43,7 @@ export interface UserHttp {
     city: string;
     country: string;
 
-    //spaces?: Space[];
+    //spaces?: SpaceHttp[];
 }
 
 export interface User {
