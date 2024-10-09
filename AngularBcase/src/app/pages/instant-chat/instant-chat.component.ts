@@ -3,24 +3,26 @@ import { environment } from '../../../environments/environment.development';
 import { ActivatedRoute } from '@angular/router';
 import { User } from '../../entities/user.entity';
 import { UsersService } from '../../services/users/users.service';
-import { MessageInput } from '../../entities/message.entity';
+import { Message, MessageInput } from '../../entities/message.entity';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-instant-chat',
   templateUrl: './instant-chat.component.html',
   styleUrls: ['./instant-chat.component.scss'],
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, NgIf, NgFor]
+  imports: [FormsModule, ReactiveFormsModule, NgIf, NgFor, DatePipe, ]
 })
 export class InstantChatComponent implements OnInit {
+  private readonly authService = inject(AuthService)
   private readonly route = inject(ActivatedRoute)
   private readonly usersService = inject(UsersService)
-  // private readonly messagesService = inject(MessagesService)
+  //private readonly messagesService = inject(MessagesService)
 
 
-  // messages: Message[]
+  messages: Message[] = []
   receiver: User
   form: FormGroup
   private socket: WebSocket;
@@ -55,6 +57,8 @@ export class InstantChatComponent implements OnInit {
         type: 'conversation.message.created',
         data: message
       }))
+
+      this.form.reset()
     }
   }
 
@@ -64,12 +68,25 @@ export class InstantChatComponent implements OnInit {
     // Lorsque la connexion est ouverte
     this.socket.onopen = () => {
       console.info('WebSocket is connected.');
-      // Envoie un message test juste après la connexion
+      this.socket.send(JSON.stringify({
+        type: 'authentication',
+        data: this.authService.token
+
+      }))
+      console.log(this.authService.token)
     };
 
     // Lorsqu'un message est reçu du serveur
     this.socket.onmessage = (event) => {
-      console.log('Message received: ', event.data);
+      console.info('Message received: ', event.data);
+      let {type, data} = JSON.parse(event.data)
+      data = JSON.parse(data);
+      if (type === 'error'){
+        console.error(data)
+      } else if (type === 'conversation.message.added'){
+        const message = Message.fromHttp(data)
+        this.messages.push(message)
+      }
     };
 
     this.socket.onerror = (event) => {

@@ -1,15 +1,15 @@
 export interface MessageHttp {
     id: number
-    sender: { id: number }
-    receiver: { id: number }
+    sender: string
+    receiver: string
     content: string
     sentDate: string
 }
 
 export interface Message {
     id: number
-    sender: { id: number }
-    receiver: { id: number }
+    sender: string
+    receiver: string
     content: string
     sentDate: string
 }
