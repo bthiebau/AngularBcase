@@ -1,1 +1,6 @@
-<p>users-list works!</p>
+<div *ngFor="let user of users">
+    {{user.email}}
+    <button
+    (click)="onClickShowConversation(user)"
+    >chat</button>
+</div>
