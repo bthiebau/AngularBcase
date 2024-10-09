@@ -35,4 +35,11 @@ export class UsersService extends BaseService {
     
     return response.member.map(userHttp => User.fromHttp(userHttp)) // => tableau de User
   }
+
+  async getById(id: number): Promise <User> {
+    const request = this.http.get<UserHttp>(`${this.apiUrl}/${id}`)
+    const response = await lastValueFrom(request);
+    console.log(response)
+    return User.fromHttp(response) // => tableau de User
+  }
 }
