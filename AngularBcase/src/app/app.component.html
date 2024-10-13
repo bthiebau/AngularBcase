@@ -14,7 +14,7 @@
 >Connexion</button>
 
 <div *ngIf="(userJWT$ | async) as userJWT">
-  {{userJWT.firstname}} {{userJWT.lastname}}
+  Connecté en tant que: {{userJWT.firstname}} {{userJWT.lastname}}
 </div>
 
   <router-outlet></router-outlet>
